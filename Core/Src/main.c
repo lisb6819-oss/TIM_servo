@@ -115,8 +115,8 @@ int main(void)
     }
     __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, count);
   
-
-    HAL_Delay(10);
+    printf("count: %d \r\n",count);
+    HAL_Delay(100);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
