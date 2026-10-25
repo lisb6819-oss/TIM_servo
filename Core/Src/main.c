@@ -115,8 +115,7 @@ int main(void)
       count=20;
       __HAL_TIM_SET_COUNTER(&htim1, 20);
     }
-    duty= (10.0*count/20+2.5)/100.0*2000;
-    __HAL_TIM_SetCompare(&htim4,TIM_CHANNEL_3,duty);
+
 
     HAL_Delay(10);
     /* USER CODE END WHILE */
