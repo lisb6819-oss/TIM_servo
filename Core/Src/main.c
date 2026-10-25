@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "stm32f1xx_hal_tim.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -92,10 +93,11 @@ int main(void)
   MX_TIM4_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+  int count = 50;
+  __HAL_TIM_SET_COUNTER(&htim1, 50);
+  __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, 0);
   HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_ALL);
-  HAL_TIM_PWM_Start(&htim4,TIM_CHANNEL_3);
-
-  int count=0;
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
 
   /* USER CODE END 2 */
 
@@ -104,18 +106,38 @@ int main(void)
   while (1)
   {
     count = __HAL_TIM_GET_COUNTER(&htim1);
-     if(count>6000) 
+    /* Keep the original underflow check before the upper-limit check. */
+    if (count > 6000)
     {
-      count=0;
+      count = 0;
       __HAL_TIM_SET_COUNTER(&htim1, 0);
-    }else if(count>100) 
+    }
+    else if (count > 100)
     {
-      count=100;
+      count = 100;
       __HAL_TIM_SET_COUNTER(&htim1, 100);
     }
-    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, count);
+
+    /* Distance from the midpoint determines the PWM duty cycle. */
+    if (count < 50)
+    {
+      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_SET);
+      __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, (50 - count) * 2);
+    }
+    else if (count > 50)
+    {
+      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
+      __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, (count - 50) * 2);
+    }
+    else
+    {
+      __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, 0);
+    }
   
-    printf("count: %d \r\n",count);
+    printf("count: %d \r\n", count);
+    fflush(stdout);
     HAL_Delay(100);
     /* USER CODE END WHILE */
 
