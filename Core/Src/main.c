@@ -125,20 +125,16 @@ int main(void)
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_SET);
       __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, (50 - count) * 2);
     }
-    else if (count > 50)
+    else if (count >= 50)
     {
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
       __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, (count - 50) * 2);
-    }
-    else
-    {
-      __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, 0);
-    }
+    } 
+  
   
     printf("count: %d \r\n", count);
-    fflush(stdout);
-    HAL_Delay(100);
+    HAL_Delay(500);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
